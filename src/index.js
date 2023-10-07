@@ -1,5 +1,5 @@
-import axios from 'axios';
 import Notiflix from 'notiflix';
+import fetchSearchQuery from './pixabay';
 
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
@@ -9,9 +9,6 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   target: document.querySelector('.scroll-point'),
 };
-
-const URL = 'https://pixabay.com/api/';
-const API_KEY = '39879115-28a2f7246b52cd09f840d063c';
 
 let currentPage = 1;
 let totalCurrentCard = 0;
@@ -39,7 +36,7 @@ function scrollHandle(entries, observer) {
     if (entry.isIntersecting) {
       currentPage += 1;
 
-      fetchSearchQuery()
+      fetchSearchQuery(currentPage)
         .then(response => {
           totalCurrentCard += response.data.hits.length;
           // Notiflix.Notify.success(
@@ -68,7 +65,7 @@ function scrollHandle(entries, observer) {
             Notiflix.Notify.info(`You've reached the end of search results!`);
           }
         })
-        .catch(error => Notiflix.Notify.failure(`Error: ${error}`));
+        .catch(error => console.log(`Error: ${error}`));
     }
   });
 }
@@ -82,12 +79,13 @@ async function handleSubmit(event) {
     return Notiflix.Notify.failure('This field must not be empty!');
   }
   try {
-    const response = await fetchSearchQuery();
+    const response = await fetchSearchQuery(currentPage);
     const data = response.data.hits;
     const totalImages = response.data.totalHits;
     totalCurrentCard = data.length;
 
     if (data.length === 0) {
+      refs.gallery.textContent = '';
       return Notiflix.Notify.failure(
         `Sorry, there are no images with your search query. Please, try again!`
       );
@@ -125,27 +123,14 @@ function markup(data) {
                   <div class="about-cat">
                     <h2>Statistics:</h2>
                       <ul>
-                      <li>${likes} likes!</li>
-                      <li>${views} views!</li>
-                      <li>${comments} comments!</li>
-                      <li>${downloads} downloads!</li>
+                        <li>${likes} likes!</li>
+                        <li>${views} views!</li>
+                        <li>${comments} comments!</li>
+                        <li>${downloads} downloads!</li>
                       </ul>
                   </div>
                 </div>`;
       }
     )
     .join('');
-}
-
-function fetchSearchQuery() {
-  const params = new URLSearchParams({
-    key: API_KEY,
-    q: searchField,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safeseacrch: 'true',
-    per_page: 40,
-    page: currentPage,
-  });
-  return axios.get(`${URL}?${params}`);
 }
