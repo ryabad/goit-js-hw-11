@@ -42,9 +42,9 @@ function scrollHandle(entries, observer) {
       fetchSearchQuery()
         .then(response => {
           totalCurrentCard += response.data.hits.length;
-          Notiflix.Notify.success(
-            `Loading next ${response.data.hits.length} images are success!`
-          );
+          // Notiflix.Notify.success(
+          //   `Loading next ${response.data.hits.length} images are success!`
+          // );
 
           refs.gallery.insertAdjacentHTML(
             'beforeend',
@@ -63,7 +63,7 @@ function scrollHandle(entries, observer) {
             behavior: 'smooth',
           });
 
-          if (currentPage * 40 >= response.data.totalHits) {
+          if (totalCurrentCard >= response.data.totalHits) {
             observer.unobserve(refs.target);
             Notiflix.Notify.info(`You've reached the end of search results!`);
           }
