@@ -15,7 +15,10 @@ let totalCurrentCard = 0;
 let searchField;
 // let idCard = 0;
 
-const simpleLB = new SimpleLightbox('.gallery a', { showCounter: false });
+const simpleLB = new SimpleLightbox('.gallery a', {
+  showCounter: false,
+  captionsData: 'Alt',
+});
 
 Notiflix.Notify.init({
   position: 'left-top',
